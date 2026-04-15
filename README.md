@@ -1,223 +1,235 @@
-# 🛒 Walmart Sales Analytics — End-to-End Data Analysis Project
+# 🛒 Walmart Sales Analysis — End-to-End BI Project
 
-> **Transforming 550K transactions into actionable business decisions using SQL, Python, and Power BI**
-
----
-
-## 📌 Business Problem
-
-Walmart's leadership needs to understand **why revenue has been flat for 4 years** despite high transaction volume, **which regions and categories are underperforming**, and **where the biggest growth opportunities lie** — across regions, store types, product categories, and customer segments.
-
-This project answers 15 real business questions a data or strategy team would ask, from executive KPIs to customer lifetime value and employee performance.
+> **Stack:** Python · PostgreSQL · SQLAlchemy · Power BI  
+> **Scale:** $764M revenue · 550,000 transactions · 5 tables · 2020–2023  
+> **Deliverable:** 3-page interactive Power BI dashboard with 20+ DAX measures
 
 ---
 
-## 🎯 Key Business Questions Answered
+## 📌 Project Summary
 
-| # | Business Question | Technique Used |
+Built a complete business intelligence pipeline — from raw, dirty CSV files to a published Power BI executive dashboard — simulating a real-world BI analyst role at a large retail organisation.
+
+The project answers **15 business questions** across revenue trends, product performance, customer lifetime value, employee productivity, and regional analysis using SQL window functions, Python EDA, and Power BI time intelligence.
+
+---
+
+## 🗂️ Project Structure
+
+```
+walmart-sales-analysis/
+│
+├── 📓 Data_Cleaning.ipynb          # Phase 1: Profiling + cleaning all 5 tables
+├── 📓 Connection_ETL.ipynb         # Phase 2: Load clean data into PostgreSQL
+├── 📓 EDA.ipynb                    # Phase 3: 12 business questions via SQL + Python charts
+├── 📄 sql_business_analysis.sql    # Phase 4: 15 advanced SQL queries (CTEs, window functions)
+├── 📊 dashboard.pbix               # Phase 5: Power BI 3-page dashboard
+├── 📄 dashboard_pdf.pdf            # Dashboard export (preview)
+└── 📁 data/
+    ├── Customer_Dim.csv
+    ├── Employee_Dim.csv
+    ├── Product_Dim.csv
+    ├── Store_Dim.csv
+    └── Sales_Fact.csv              # 561,000 raw rows
+```
+
+---
+
+## 🔧 Phase 1 — Data Cleaning (Python · pandas)
+
+**Raw data had 6 categories of quality issues across 5 tables.**
+
+| Table | Issue Found | Fix Applied |
 |---|---|---|
-| 1 | What is overall business performance? | Aggregate KPIs |
-| 2 | Is revenue growing or declining month over month? | MoM Growth, LAG() |
-| 3 | Which region and store type drives the most revenue? | GROUP BY + RANK() |
-| 4 | Which product categories are gaining or losing share? | YoY Growth, window functions |
-| 5 | Who are our highest lifetime value customers? | LTV ranking, RANKX |
-| 6 | Which customer segment is most profitable? | Segment profitability |
-| 7 | Which employees and departments outperform? | PARTITION BY dept |
-| 8 | What payment method generates highest order value? | Payment analysis |
-| 9 | Are there seasonal or day-of-week revenue patterns? | DOW analysis |
-| 10 | What is the quarterly revenue breakdown? | Quarter-over-quarter |
+| Sales_Fact | 11,000 duplicate rows | `drop_duplicates()` → 550,000 clean rows |
+| Sales_Fact | 44,486 null Shipping_Cost (7.9%) | Filled → 0.0 (business rule: no record = no charge) |
+| Sales_Fact | 3 mixed date formats (`YYYY-MM-DD`, `MM/DD/YYYY`, `DD-Mon-YY`) | `pd.to_datetime(format='mixed')` |
+| Sales_Fact | 12 variants of Payment_Method (`cash`, `CASH`, ` Cash `) | `.str.strip().str.title()` → 4 clean values |
+| Customer_Dim | 80 duplicate Customer_IDs, 87 null City/State | Dedup on ID, fill → `'Unknown'` |
+| Employee_Dim | Mixed dept names (`sales`, ` Sales `, `SALES`) | `.str.strip().str.title()` + regex `\bIt\b → IT` |
+| Product_Dim | 25 duplicate Product_IDs, `Kitchen Ware` inconsistency | Dedup + `.replace()` |
+| Store_Dim | Mixed State casing (`ca`, `CA`, ` CA`) | `.str.strip().str.upper()` |
+
+**Validation steps added (what separates senior from junior analysts):**
+- Referential integrity check — confirmed all Sales foreign keys exist in dimension tables
+- Cross-validation: `Total_Price = Quantity × Unit_Price` — 0 mismatches found
+- Added derived time columns (`Year`, `Month`, `Quarter`, `Weekday`) for Power BI
 
 ---
 
-## 💡 Top 5 Insights Discovered
+## 🔌 Phase 2 — ETL to PostgreSQL (SQLAlchemy)
 
-**1. Revenue is flat — not growing**
-Monthly revenue has stayed between $14M–$17M from 2020–2023 with no upward trend. Despite 550K transactions, no category grew more than 1% YoY. This signals a **saturation problem**, not a demand problem.
+```python
+from sqlalchemy import create_engine
 
-**2. Central region outperforms West by $59M**
-Central ($221M) beats West ($162M) by 37% — the largest regional gap. Every product category shows a $12–13M Central-West gap. West is the single biggest untapped revenue opportunity.
+engine = create_engine('postgresql://user:password@localhost:5432/walmart_sales_db')
 
-**3. Accessories alone drive 53% of Clothing revenue**
-Accessories ($90M) is 1.2× bigger than Smartphones and single-handedly props up the Clothing category. If accessories underperform, Clothing ($169M) collapses. High concentration risk.
+for table, df in tables.items():
+    df.to_sql(table, engine, if_exists='replace', index=False)
+```
 
-**4. Consumer segment dominates but Corporate is underleveraged**
-Consumer generates $519M vs Corporate's $153M. Yet Corporate customers have higher order values. The B2B segment is systematically underserved — a major growth lever.
-
-**5. Employee performance is highly uneven**
-Only 33 of 93 employees exceed the average revenue threshold. Top performer (Eve Smith, $18.5M) outperforms the lowest by 26%. Department-level coaching could unlock significant revenue.
+All 5 clean tables loaded into PostgreSQL `walmart_sales_db`. This enables full SQL analytics with joins, CTEs, and window functions.
 
 ---
 
-## 🏗️ Project Architecture
+## 📊 Phase 3 — EDA (Python · SQLAlchemy · matplotlib · seaborn)
 
+12 business questions answered with SQL queries executed via SQLAlchemy and visualised in Python:
+
+| # | Business Question | Technique |
+|---|---|---|
+| Q1 | Executive KPI snapshot | Aggregates |
+| Q2 | Monthly revenue trend + MoM% | `LAG()` window function |
+| Q3 | Revenue by region and store type | `JOIN` + `SUM() OVER()` |
+| Q4 | Product category performance | `RANK() OVER (PARTITION BY)` |
+| Q5 | Top customers by lifetime value | Double `RANK()` — overall + per segment |
+| Q6 | Customer segment analysis | `GROUP BY` + revenue per customer |
+| Q7 | Age group revenue breakdown | `pd.cut()` binning + grouped aggregation |
+| Q8 | Payment method split | Grouped aggregates + ratio calculation |
+| Q9 | Shipping cost vs order value | Correlation analysis + scatter |
+| Q10 | Employee performance scorecard | `RANK() OVER (PARTITION BY department)` |
+| Q11 | YoY category growth | `LAG() OVER (PARTITION BY category)` |
+| Q12 | Day of week + basket size | `dt.day_name()` + grouped scatter |
+
+---
+
+## 🗃️ Phase 4 — SQL Business Analytics (PostgreSQL)
+
+**15 production-grade SQL queries** covering every business dimension.
+
+Key SQL techniques used:
+
+```sql
+-- YoY Growth with LAG window function
+WITH yearly_cat AS (
+    SELECT EXTRACT(YEAR FROM "Sale_Date"::date) AS year,
+           p."Category",
+           ROUND(SUM("Total_Price")::numeric, 2) AS revenue
+    FROM clean_sales s
+    JOIN clean_product p ON s."Product_ID" = p."Product_ID"
+    GROUP BY year, p."Category"
+)
+SELECT *,
+    LAG(revenue) OVER (PARTITION BY "Category" ORDER BY year) AS prev_year,
+    ROUND((revenue - LAG(revenue) OVER (PARTITION BY "Category" ORDER BY year))
+          / LAG(revenue) OVER (PARTITION BY "Category" ORDER BY year) * 100, 2
+    ) AS yoy_growth_pct
+FROM yearly_cat ORDER BY "Category", year;
 ```
-walmart-sales-analytics/
-│
-├── data/                        # Raw and cleaned CSV files
-│   ├── clean_customer.csv
-│   ├── clean_product.csv
-│   ├── clean_store.csv
-│   ├── clean_employee.csv
-│   └── clean_sales.csv
-│
-├── notebooks/
-│   ├── Data_Cleaning.ipynb      # Pandas data cleaning pipeline
-│   ├── EDA.ipynb                # Exploratory data analysis + visualizations
-│   └── Connection_ETL.ipynb     # PostgreSQL ETL via SQLAlchemy
-│
-├── sql/
-│   └── sql_business_analysis.sql  # 15 business queries with window functions
-│
-├── images/                      # Dashboard screenshots
-│
-├── dashboard.pbix               # Power BI report file
-├── dashboard_pdf.pdf            # Static PDF export
-└── README.md
+
+**Window functions used:** `LAG`, `RANK`, `DENSE_RANK`, `SUM() OVER()`, `PARTITION BY`, `DATESINPERIOD`  
+**Other techniques:** CTEs, multi-table JOINs, running totals, revenue share %, Top N filtering
+
+---
+
+## 📈 Phase 5 — Power BI Dashboard (3 Pages)
+
+### Setup
+- Star schema with 5 tables (1 fact + 4 dimensions)
+- Dynamic Calendar table created in DAX (`CALENDAR` + `ADDCOLUMNS`)
+- All measures in dedicated `_Measures` table
+
+### DAX Measures (20+)
+
+```dax
+-- Time Intelligence
+Revenue LY       = CALCULATE([Total Revenue], SAMEPERIODLASTYEAR(Calendar[Date]))
+YoY Revenue %    = DIVIDE([Total Revenue] - [Revenue LY], [Revenue LY]) * 100
+Revenue YTD      = CALCULATE([Total Revenue], DATESYTD(Calendar[Date]))
+Rolling 12M      = CALCULATE([Total Revenue], DATESINPERIOD(Calendar[Date], LASTDATE(Calendar[Date]), -12, MONTH))
+MoM Revenue %    = VAR curr = [Total Revenue]
+                   VAR prev = CALCULATE([Total Revenue], DATEADD(Calendar[Date], -1, MONTH))
+                   RETURN DIVIDE(curr - prev, prev) * 100
+
+-- Rankings
+Customer LTV Rank = RANKX(ALLSELECTED(clean_customer[Customer_Name]), [Total Revenue], , DESC, DENSE)
 ```
+
+### Page 1 — Executive Summary
+KPI cards · Monthly revenue trend · Revenue by region · Store type donut · US state map · Insight text box
+
+### Page 2 — Product & Store
+Revenue by category · Top 10 sub-categories · YoY matrix with conditional formatting (green/red) · Regional donut · Insight text box
+
+### Page 3 — Customer & Employee
+Revenue by segment · Revenue by age group · Payment method donut · Top 20 customers LTV table with rank · Top employees bar chart · Insight text box
+
+---
+
+## 🔍 Key Business Findings
+
+| Finding | Data Point | Business Implication |
+|---|---|---|
+| Revenue plateau | $14M–$17M/month, flat for 4 years | Market saturation — organic growth strategy needed |
+| Central leads all categories | $221M vs West $162M | West region = $59M untapped opportunity |
+| Books only growing category | +3.6% YoY in 2023 | Expand Books assortment — Fiction +8.5% |
+| Clothing reversing | +0.8% → -1.3% | Fastest declining category — intervention needed |
+| Top 10 customers = 100% Consumer | Zero Corporate/Home Office in top 10 | B2B segment underdeveloped — $367M gap vs Consumer |
+| 18–30 age group leads | $217M vs 61+ at $131M | Senior segment $86M behind — targeted opportunity |
+| Sales dept ranks last | $79.9M vs Marketing $95M | Counter-intuitive — warrants operational review |
+| Specialty stores underperform | Only 5.77% revenue share | Format issue, not product issue — all 5 categories affected |
+| Top employee 2.25x average | Eve Smith $18.5M vs avg $8.2M | 33 of 93 employees below average — coaching gap |
+| Payment methods equal split | ~25% each of 4 methods | No dominant preference — healthy, low processing-fee risk |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Tool | Purpose |
+| Tool | Version | Purpose |
 |---|---|---|
-| Data Cleaning | Python, Pandas | Null handling, type casting, deduplication |
-| Storage | PostgreSQL | Relational database for structured querying |
-| ETL | SQLAlchemy, psycopg2 | Python → PostgreSQL pipeline |
-| Analysis | SQL (PostgreSQL) | 15 business queries, window functions, CTEs |
-| Visualization | Power BI | 3-page interactive dashboard |
-| Version Control | Git, GitHub | Project tracking and portfolio sharing |
+| Python | 3.12 | Data cleaning, EDA, ETL |
+| pandas | 2.2 | Data manipulation |
+| SQLAlchemy | 2.0 | Python ↔ PostgreSQL connection |
+| psycopg2 | 2.9 | PostgreSQL driver |
+| PostgreSQL | 16 | Data warehouse + SQL analytics |
+| matplotlib / seaborn | latest | EDA visualisations |
+| Power BI Desktop | 2024 | Dashboard + DAX |
 
 ---
 
-## 📊 Dashboard Overview
+## 🚀 How to Run
 
-3-page interactive Power BI dashboard with cross-page slicers (Year, Region, Store Type):
+**Prerequisites:** Python 3.10+, PostgreSQL 14+, Power BI Desktop
 
-**Page 1 — Executive Summary**
-KPI cards · Monthly trend · Revenue by Region · Top States map · Key insights
-
-**Page 2 — Product & Store**
-Revenue by Category · Top 10 Sub-categories · YoY% performance table · Regional breakdown
-
-**Page 3 — Customer & Employee**
-Customer LTV ranking · Segment analysis · Age group breakdown · Employee performance
-
----
-
-## 🔍 SQL Highlights
-
-This project uses advanced SQL beyond basic SELECT queries:
-
-```sql
--- MoM Revenue Growth using LAG() window function
-WITH monthly_rev AS (
-    SELECT
-        EXTRACT(YEAR FROM "Sale_Date"::date) AS year,
-        EXTRACT(MONTH FROM "Sale_Date"::date) AS month,
-        ROUND(SUM("Total_Price")::numeric, 2) AS revenue
-    FROM clean_sales
-    GROUP BY year, month
-)
-SELECT
-    year, month, revenue,
-    ROUND(
-        ((revenue - LAG(revenue) OVER (ORDER BY year, month))
-         / LAG(revenue) OVER (ORDER BY year, month) * 100)::numeric, 2
-    ) AS mom_growth_pct
-FROM monthly_rev
-ORDER BY year, month;
-```
-
-```sql
--- Customer LTV with segment ranking
-SELECT
-    c."Customer_Name", c."Segment",
-    ROUND(SUM(s."Total_Price")::numeric, 2) AS lifetime_value,
-    RANK() OVER (ORDER BY SUM(s."Total_Price") DESC) AS ltv_rank,
-    RANK() OVER (PARTITION BY c."Segment" ORDER BY SUM(s."Total_Price") DESC) AS rank_in_segment
-FROM clean_sales s
-JOIN clean_customer c ON s."Customer_ID" = c."Customer_ID"
-GROUP BY s."Customer_ID", c."Customer_Name", c."Segment"
-ORDER BY lifetime_value DESC;
-```
-
----
-
-## 🐍 Python Pipeline
-
-```python
-# ETL: Load cleaned CSVs into PostgreSQL via SQLAlchemy
-from sqlalchemy import create_engine
-import pandas as pd
-
-engine = create_engine('postgresql://user:password@localhost:5432/walmart_sales_db')
-
-for table, file in {
-    'clean_customer': 'clean_customer.csv',
-    'clean_product':  'clean_product.csv',
-    'clean_store':    'clean_store.csv',
-    'clean_employee': 'clean_employee.csv',
-    'clean_sales':    'clean_sales.csv'
-}.items():
-    pd.read_csv(file).to_sql(table, engine, if_exists='replace', index=False)
-
-print("ETL complete — all 5 tables loaded.")
-```
-
----
-
-## 📈 Dataset
-
-| Attribute | Detail |
-|---|---|
-| Source | Synthetic dataset modeled on Walmart retail structure |
-| Records | 550,000 sales transactions |
-| Time Period | January 2020 – December 2023 |
-| Tables | 5 (Sales, Customer, Product, Store, Employee) |
-| Customers | 1,000 unique customers |
-| Products | Multiple categories across 5 departments |
-
-> ⚠️ **Note:** This is a synthetic dataset created for analytical demonstration. It is designed to reflect realistic retail relationships and business patterns, not actual Walmart data.
-
----
-
-## 🚀 How to Run This Project
-
-**1. Clone the repo**
 ```bash
-git clone https://github.com/seema-kri/walmart-sales-analytics.git
-cd walmart-sales-analytics
-```
+# 1. Clone the repo
+git clone https://github.com/yourusername/walmart-sales-analysis
+cd walmart-sales-analysis
 
-**2. Set up PostgreSQL**
-```bash
-# Create database
-createdb walmart_sales_db
-```
+# 2. Install dependencies
+pip install pandas sqlalchemy psycopg2 matplotlib seaborn
 
-**3. Run Python ETL**
-```bash
-jupyter notebook notebooks/Connection_ETL.ipynb
-# Update connection string with your credentials
-```
+# 3. Create PostgreSQL database
+psql -U postgres -c "CREATE DATABASE walmart_sales_db;"
 
-**4. Run SQL Analysis**
-```bash
-psql -d walmart_sales_db -f sql/sql_business_analysis.sql
-```
+# 4. Run notebooks in order
+jupyter notebook Data_Cleaning.ipynb       # Clean raw CSVs
+jupyter notebook Connection_ETL.ipynb      # Load into PostgreSQL
+jupyter notebook EDA.ipynb                 # Run EDA analysis
 
-**5. Open Power BI Dashboard**
-```
-Open dashboard.pbix in Power BI Desktop
-Update data source to your PostgreSQL connection
+# 5. Open SQL file in pgAdmin or DBeaver
+# Run sql_business_analysis.sql
+
+# 6. Open dashboard.pbix in Power BI Desktop
+# Update connection string to your local PostgreSQL
 ```
 
 ---
 
-## 👩‍💻 About
+## 📁 Dataset
 
-Built as an end-to-end data analytics portfolio project demonstrating the full analyst workflow:
-**raw data → cleaning → storage → SQL analysis → visualization → business insights**
+| Table | Rows | Key Columns |
+|---|---|---|
+| Sales_Fact | 561,000 raw / 550,000 clean | Sale_Date, Total_Price, Quantity, Payment_Method |
+| Customer_Dim | 1,000 | Segment, Age, City, State |
+| Product_Dim | 500 | Category, Sub_Category, Brand |
+| Store_Dim | 50 | Region, Store_Type, City |
+| Employee_Dim | 200 | Department, Position, Hire_Date |
 
-📧 Connect on [LinkedIn](https://www.linkedin.com/in/seema-kumari-375763308/) 
+---
+
+## 👤 About
+
+Built as an end-to-end portfolio project simulating a real BI analyst workflow — from raw messy data to executive dashboard with business recommendations.
+
+**Connect:** [LinkedIn](https://www.linkedin.com/in/seema-kumari-375763308/) · [Portfolio](https://github.com/seema-kri)
