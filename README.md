@@ -1,4 +1,4 @@
-# 🛒 Walmart BI Analytics Platform
+# 🛒 Walmart Sales Analytics 
 
 🚀 Built a production-ready BI system analyzing **$764M in retail data** to drive executive decision-making.
 
