@@ -1,160 +1,101 @@
-# 🛒 Walmart Sales Analytics 
+# Walmart Sales Analytics — End-to-End BI Platform
 
-🚀 Built a production-ready BI system analyzing **$764M in retail data** to drive executive decision-making.
+> Engineered a production-grade BI system analyzing **$764M in retail transactions** — from raw data ingestion to executive decision dashboards.
 
----
-
-## 🚨 Why This Project Stands Out
-
-Most portfolios show *analysis*. This project demonstrates **business impact, scalability, and decision-making clarity**.
-
-✔ Built like a real-world BI system used by enterprise teams 
-
-✔ Processes **550,000+ transactions** across multiple dimensions 
-
-✔ Answers **critical business questions executives actually ask** 
-
-✔ Delivers a **decision-ready dashboard — not just charts**
+| Metric | Value |
+|---|---|
+| Revenue analyzed | $764M |
+| Transactions processed | 550K+ |
+| Business SQL queries | 15 |
+| DAX measures | 20+ |
+| Pipeline stages | 5 |
 
 ---
 
 ## 📊 Dashboard Preview
 
 ### Executive Summary
-
-![Executive](images/Excecutive%20Summary.png)
+![Executive Summary](images/Excecutive%20Summary.png)
 
 ### Product & Store Insights
-
-![Product](images/Product%20%26%20Store.png)
+![Product & Store](images/Product%20%26%20Store.png)
 
 ### Customer & Employee Insights
-
-![Customer](images/Customer%20%26%20Employee.png)
-
-> 3-page interactive Power BI dashboard designed for leadership-level decision making.
+![Customer & Employee](images/Customer%20%26%20Employee.png)
 
 ---
 
-## 💼 Business Problem
+## Pipeline
 
-Retail leaders lack a **single source of truth** to answer:
-
-* Why has revenue plateaued?
-* Which categories are growing vs declining?
-* Where are we losing market share?
-* Who are our most valuable customers and employees?
-
-This project solves that.
+```
+Raw CSV → Python (pandas) → PostgreSQL star schema → SQL analytics → Power BI dashboard
+```
 
 ---
 
-## 🧠 What I Built
+## What I Built
 
-A complete **end-to-end BI pipeline** — from raw data to executive insights:
+**Data engineering** — Cleaned 550K+ rows of raw retail data across 5 tables: removed duplicates, resolved nulls, standardized formats, and enforced referential integrity before any analysis ran.
 
-### 🔹 Data Engineering (Python · pandas)
+**Data warehouse** — Designed a star schema (1 fact table + 4 dimension tables) in PostgreSQL. Enables scalable analytical joins without query rewrites as data volume grows.
 
-* Cleaned **550K+ rows** with real-world inconsistencies
-* Removed duplicates, handled nulls, standardized formats
-* Ensured **referential integrity across 5 tables**
+**SQL analytics** — Wrote 15 business-critical queries using CTEs, window functions (LAG, RANK, DENSE_RANK), and time-series aggregations. Each query answers a specific executive question — not a generic data dump.
 
-### 🔹 Data Warehouse (PostgreSQL)
-
-* Designed a **star schema (1 fact + 4 dimensions)**
-* Enabled scalable analytics using SQL joins & indexing
-
-### 🔹 Advanced Analytics (SQL + Python)
-
-* Built **15 business-critical queries**
-* Used **window functions (LAG, RANK, DENSE_RANK)**
-* Performed trend, cohort, and performance analysis
-
-### 🔹 Executive Dashboard (Power BI)
-
-* 3 interactive pages
-* 20+ DAX measures
-* Time intelligence (YoY, MoM, Rolling 12M)
-* Drill-down capability for decision-makers
+**Executive dashboard** — Built a 3-page Power BI dashboard with 20+ DAX measures and time intelligence (YoY, MoM, Rolling 12M). Designed for leadership decision-making, not data exploration.
 
 ---
 
-## 📈 Key Business Insights
+## Business Insights Uncovered
 
-### 🚩 Revenue Stagnation
+**🚩 Revenue stagnation** — Monthly revenue flat at $14M–$17M for 4 years despite 550K transactions. Indicates market saturation; incremental optimization won't fix this.
 
-* Monthly revenue stuck between **$14M–$17M for 4 years**
-  👉 Indicates **market saturation → growth strategy required**
+**🌍 $59M regional gap** — Central region generates $221M vs West's $162M. Central outperforms West by $12–13M in every product category — largest single growth lever in the data.
 
-### 🌍 Regional Opportunity
+**📚 Books is the only growing category** — +3.6% YoY in 2023 (Fiction +8.5%, Non-Fiction +5.2%). Clothing dropped –1.3%. Budget reallocation from Clothing to Books is data-backed.
 
-* Central: **$221M** vs West: **$162M**
-  👉 **$59M untapped potential**
+**👥 B2B channel underdeveloped** — Consumer segment: $519M. Corporate: $153M. Zero Corporate presence in top 10 customers by LTV. $367M gap represents an untapped revenue channel.
 
-### 📚 Category Performance
-
-* Books: **+3.6% YoY (only growing category)**
-* Clothing: **declining (-1.3%)**
-  👉 Reallocate investment
-
-### 👥 Customer Imbalance
-
-* Top 10 customers = **100% Consumer segment**
-  👉 B2B underdeveloped (**$367M gap**)
-
-### 🧑‍💼 Employee Gap
-
-* Top performer = **2.25× average**
-* ~35% below average
-  👉 Training + performance optimization needed
+**🧑‍💼 Employee performance spread** — Top performer generates 2.25× the average. Only 33 of 93 employees exceed average revenue contribution — structured coaching program has measurable ROI.
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
-| Layer           | Tools                        |
-| --------------- | ---------------------------- |
-| Data Processing | Python, pandas               |
-| Database        | PostgreSQL                   |
-| Data Access     | SQLAlchemy, psycopg2         |
-| Analysis        | SQL (CTEs, Window Functions) |
-| Visualization   | Power BI                     |
+| Layer | Tools |
+|---|---|
+| Data processing | Python, pandas |
+| Database | PostgreSQL |
+| Data access | SQLAlchemy, psycopg2 |
+| Analytics | SQL — CTEs, window functions, aggregations |
+| Visualization | Power BI, DAX |
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 walmart-bi-analytics-platform/
 │
-├── notebooks/              # Data cleaning, ETL, EDA
-├── sql/                    # Business analysis queries
-├── data/                   # Raw datasets
-├── images/                 # Dashboard previews
-├── dashboard.pbix          # Power BI file
+├── notebooks/
+│   ├── Data_Cleaning.ipynb       # 550K+ row cleaning pipeline
+│   ├── Connection_ETL.ipynb      # PostgreSQL load via SQLAlchemy
+│   └── EDA.ipynb                 # Exploratory analysis
+│
+├── sql/
+│   └── sql_bussiness_analysis.sql  # 15 business-critical queries
+│
+├── images/                       # Dashboard screenshots
+├── dashboard.pbix                # Power BI file (open in Power BI Desktop)
 └── README.md
 ```
 
 ---
 
-## ⚡ What Makes This Hiring-Ready
-
-This is not a tutorial project.
-
-This demonstrates:
-
-* ✅ Business thinking (not just coding)
-* ✅ Production-level SQL skills
-* ✅ Data storytelling for executives
-* ✅ End-to-end ownership (data → insight → decision)
-
----
-
-## 🚀 How to Run
+## Run It Yourself
 
 ```bash
-# Clone repo
-git clone https://github.com/yourusername/walmart-bi-analytics-platform
+# Clone the repo
+git clone https://github.com/seema-kri/walmart-bi-analytics-platform
 cd walmart-bi-analytics-platform
 
 # Install dependencies
@@ -163,29 +104,30 @@ pip install pandas sqlalchemy psycopg2 matplotlib seaborn
 # Create PostgreSQL database
 psql -U postgres -c "CREATE DATABASE walmart_sales_db;"
 
-# Run notebooks
-jupyter notebook Data_Cleaning.ipynb
-jupyter notebook Connection_ETL.ipynb
-jupyter notebook EDA.ipynb
+# Run notebooks in order
+jupyter notebook notebooks/Data_Cleaning.ipynb
+jupyter notebook notebooks/Connection_ETL.ipynb
+jupyter notebook notebooks/EDA.ipynb
 ```
 
----
-
-## 👤 About Me
-
-I build data systems that answer **real business questions — not just dashboards**.
-
-🔗 LinkedIn: https://www.linkedin.com/in/seema-kumari-375763308/
-🔗 GitHub: https://github.com/seema-kri
+Then open `dashboard.pbix` in Power BI Desktop.
 
 ---
 
-## ⭐ Final Note
+## Why This Project
 
-If you're hiring for:
+Most portfolios show analysis. This project demonstrates **end-to-end ownership** — messy raw data goes in, boardroom-ready decisions come out.
 
-* Data Analyst
-* BI Analyst
-* Analytics Engineer
+- ✅ Business thinking embedded at every step — not just code
+- ✅ SQL that answers questions executives actually ask
+- ✅ Dashboard designed to surface decisions, not display numbers
+- ✅ Pipeline architecture that scales beyond tutorial datasets
 
-This project reflects how I would **deliver impact from Day 1**.
+---
+
+## About
+
+I build data systems that surface decisions — not just charts.
+
+🔗 **LinkedIn** — https://www.linkedin.com/in/seema-kumari-375763308/  
+🔗 **GitHub** — https://github.com/seema-kri
