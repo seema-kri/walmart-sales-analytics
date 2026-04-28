@@ -121,15 +121,28 @@ Top performer = **2.25× average output**
 ---
 
 ## Project Structure
-walmart-bi-analytics-platform/
-├── notebooks/
-├── sql/
-├── data/
-├── images/
-├── dashboard.pbix
-├── requirements.txt
-└── README.md
 
+walmart-bi-analytics-platform/
+│
+├── notebooks/
+│   ├── Data_Cleaning.ipynb         # Data preprocessing for 550K+ rows
+│   ├── Connection_ETL.ipynb        # ETL pipeline (Python → PostgreSQL)
+│   └── EDA.ipynb                   # Exploratory data analysis & insights
+│
+├── sql/
+│   ├── 01_revenue_trends.sql       # Monthly, YoY, MoM revenue analysis
+│   ├── 02_regional_performance.sql # Region-wise revenue comparison
+│   ├── 03_category_analysis.sql    # Product category performance
+│   ├── 04_customer_ltv.sql         # Customer lifetime value ranking
+│   └── 05_employee_performance.sql # Employee contribution analysis
+│
+├── data/
+│   └── schema.sql                  # Star schema (fact + dimension tables)
+│
+├── images/                         # Dashboard screenshots for preview
+├── dashboard.pbix                  # Power BI dashboard file
+├── requirements.txt                # Python dependencies
+└── README.md                       # Project documentation
 ---
 
 ## Tech Stack
