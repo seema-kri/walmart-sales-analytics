@@ -29,7 +29,7 @@ Retail leaders need clear answers to:
 - Which segments are underperforming?
 - What actions can drive measurable growth?
 
-Raw transactional data cannot answer these questions directly.
+Raw transactional data cannot directly answer these questions.
 
 This project builds an **end-to-end BI system** that converts raw data into **executive-level insights and strategic recommendations**.
 
@@ -41,19 +41,18 @@ This project builds an **end-to-end BI system** that converts raw data into **ex
 ## Pipeline Architecture
 Raw CSV → Python (pandas) → PostgreSQL (Star Schema) → SQL Analytics → Power BI Dashboard
 
-
 ---
 
 ## What I Built
 
 ### 1. Data Engineering
 - Cleaned 550K+ rows across 5 datasets  
-- Handled nulls, duplicates, inconsistent formats  
-- Ensured **data integrity before analysis**
+- Handled nulls, duplicates, and inconsistent formats  
+- Ensured **high data quality before analysis**
 
 ### 2. Data Warehouse
 - Designed **star schema** (1 fact + 4 dimension tables)  
-- Enabled **scalable, high-performance analytical queries**
+- Enabled **scalable and efficient analytical queries**
 
 ### 3. SQL Analytics
 - Developed **15 business-driven queries**  
@@ -65,109 +64,97 @@ Raw CSV → Python (pandas) → PostgreSQL (Star Schema) → SQL Analytics → P
 ### 4. Executive Dashboard
 - Built **3-page Power BI dashboard**  
 - Created **20+ DAX measures** (YoY growth, rolling metrics)  
-- Designed for **decision-making, not just visualization**
+- Designed for **business decision-making**
 
 ---
 
 ## Key Business Insights → Actions
 
-### 1. Revenue Stagnation
+### Revenue Stagnation
 Revenue remained flat at **$14M–$17M monthly over 4 years**
 
-- **Action:** Shift focus from saturated segments to growth categories  
-- **Impact:** Estimated **+$8M–$12M annual uplift** through reallocation strategy  
+- **Action:** Shift focus to high-growth categories and regions  
+- **Impact:** Estimated **+$8M–$12M annual revenue uplift**
 
 ---
 
-### 2. $59M Regional Gap
+### $59M Regional Gap
 Central: $221M vs West: $162M
 
 - **Action:** Replicate Central region strategies in West  
-- **Impact:** Potential to recover **$50M+ revenue gap**  
+- **Impact:** Potential to recover **$50M+ revenue gap**
 
 ---
 
-### 3. Category Performance Shift
+### Category Performance Shift
 Books: +3.6% YoY | Clothing: –1.3%
 
 - **Action:** Reallocate budget from Clothing → Books  
-- **Impact:** Expected **3–5% increase in overall revenue growth**  
+- **Impact:** Expected **3–5% revenue growth**
 
 ---
 
-### 4. Untapped B2B Opportunity
+### Untapped B2B Opportunity
 Consumer: $519M | Corporate: $153M
 
-- **Action:** Launch B2B acquisition strategy  
-- **Impact:** **$300M+ expansion opportunity** in underserved segment  
+- **Action:** Build a dedicated B2B acquisition strategy  
+- **Impact:** **$300M+ expansion opportunity**
 
 ---
 
-### 5. Employee Performance Gap
+### Employee Performance Gap
 Top performer = **2.25× average output**
 
-- **Action:** Introduce performance-based incentives & training  
-- **Impact:** Improved team productivity and revenue contribution  
+- **Action:** Introduce performance incentives and training  
+- **Impact:** Increased team productivity and revenue contribution  
 
 ---
 
-## Business Recommendations (Executive Summary)
+## Business Recommendations
 
 - Expand high-performing regional strategies  
 - Invest in high-growth product categories  
-- Build dedicated B2B sales channel  
-- Implement employee performance optimization programs  
+- Build a B2B revenue channel  
+- Optimize employee performance through incentives  
 
 ---
 
 ## Project Structure
-
 walmart-bi-analytics-platform/
-│
-├── notebooks/
-│   ├── Data_Cleaning.ipynb         # Data preprocessing for 550K+ rows
-│   ├── Connection_ETL.ipynb        # ETL pipeline (Python → PostgreSQL)
-│   └── EDA.ipynb                   # Exploratory data analysis & insights
-│
-├── sql/
-│   ├── 01_revenue_trends.sql       # Monthly, YoY, MoM revenue analysis
-│   ├── 02_regional_performance.sql # Region-wise revenue comparison
-│   ├── 03_category_analysis.sql    # Product category performance
-│   ├── 04_customer_ltv.sql         # Customer lifetime value ranking
-│   └── 05_employee_performance.sql # Employee contribution analysis
-│
-├── data/
-│   └── schema.sql                  # Star schema (fact + dimension tables)
-│
-├── images/                         # Dashboard screenshots for preview
-├── dashboard.pbix                  # Power BI dashboard file
-├── requirements.txt                # Python dependencies
-└── README.md                       # Project documentation
+├── data/ # Schema & data files
+├── images/ # Dashboard screenshots
+├── notebooks/ # Data cleaning, ETL, EDA
+├── sql/ # Business analysis queries
+├── dashboard.pbix # Power BI dashboard
+├── dashboard_pdf.pdf # Dashboard report (PDF)
+├── requirements.txt # Dependencies
+└── README.md
+
 ---
 
 ## Tech Stack
 
-- **Python (pandas)** — data cleaning & transformation  
-- **PostgreSQL** — data warehouse (star schema)  
-- **SQL** — analytical queries (CTEs, window functions)  
-- **Power BI** — dashboard & business reporting  
+- **Python (pandas)** — data processing  
+- **PostgreSQL** — data warehouse  
+- **SQL** — analytics (CTEs, window functions)  
+- **Power BI** — visualization & reporting  
 
 ---
 
 ## Performance & Scalability
 
-- Star schema improves query efficiency for large datasets  
-- Handles **550K+ rows with scalable design**  
-- Modular SQL queries enable easy business question expansion  
+- Star schema improves query performance  
+- Handles **550K+ rows efficiently**  
+- Modular design supports scalability  
 
 ---
 
 ## Future Work
 
-- Revenue **forecasting model** (predict next 6–12 months)  
-- Customer segmentation (high vs low value users)  
-- Real-time data pipeline (streaming ingestion)  
-- Dashboard deployment (Power BI Service / web embedding)  
+- Revenue forecasting model (6–12 months prediction)  
+- Customer segmentation (high vs low value)  
+- Real-time data pipeline  
+- Dashboard deployment (Power BI Service)  
 
 ---
 
@@ -175,5 +162,5 @@ walmart-bi-analytics-platform/
 
 I build data systems that drive **business decisions, not just dashboards**.
 
-[LinkedIn](https://www.linkedin.com/in/seema-kumari-375763308/)  
-[GitHub](https://github.com/seema-kri)
+🔗 [LinkedIn](https://www.linkedin.com/in/seema-kumari-375763308/)  
+💻 [GitHub](https://github.com/seema-kri)
