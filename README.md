@@ -120,16 +120,18 @@ Top performer = **2.25× average output**
 ---
 
 ## Project Structure
-walmart-bi-analytics-platform/
-├── data/ # Schema & data files
-├── images/ # Dashboard screenshots
-├── notebooks/ # Data cleaning, ETL, EDA
-├── sql/ # Business analysis queries
-├── dashboard.pbix # Power BI dashboard
-├── dashboard_pdf.pdf # Dashboard report (PDF)
-├── requirements.txt # Dependencies
-└── README.md
 
+```
+walmart-bi-analytics-platform/
+├── data/                # Schema & data files
+├── images/              # Dashboard screenshots
+├── notebooks/           # Data cleaning, ETL, EDA
+├── sql/                 # Business analysis queries
+├── dashboard.pbix       # Power BI dashboard
+├── dashboard_pdf.pdf    # Dashboard report (PDF)
+├── requirements.txt     # Dependencies
+└── README.md
+```
 ---
 
 ## Tech Stack
